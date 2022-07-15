@@ -1,24 +1,23 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useState, useEffect, createContext } from "react";
+import {
+  useState,
+  useEffect,
+  useContext,
+  createContext,
+  ReactNode,
+} from "react";
+import toast from "react-hot-toast";
 
 import { isSignedIn, setAllCookies, getAllCookies } from "../utils/helper";
 
-// const authContext = createContext({ user: null } as any);
-// const { Provider } = authContext;
-
-export const GlobalContext = createContext({ user: null } as any);
+const authContext = createContext({ user: null } as any);
+const { Provider } = authContext;
 // Provider hook that creates an auth object and handles it's state
-export const UseAuthProvider = ({ children }: any) => {
-  const [user, setUser] = useState<any>(null);
+export const useAuthProvider = () => {
+  const { user, setUser } = useContext(authContext);
 
-  const signIn = (name?: string) => {
-    // const cookieEmail = getCookie("name");
-    // const cookiePassword = getCookie");
-    if (name) {
-      setUser({ name });
-      return {success: true}
-    }
-    return {success: false}
+  const signIn = (user: any) => {
+    storeAllCookies(user);
   };
 
   const getUserDetails = () => {
@@ -32,6 +31,11 @@ export const UseAuthProvider = ({ children }: any) => {
   };
 
   const signOut = () => {
+    const user = getAllCookies();
+    Object.keys(user).forEach((key) => {
+      user[key] = "";
+    });
+    setAllCookies(user);
     setUser(null);
     return { success: true };
   };
@@ -42,14 +46,20 @@ export const UseAuthProvider = ({ children }: any) => {
     }
   }, []);
 
-  return (
-    <GlobalContext.Provider value={{ user, signIn, signOut, storeAllCookies }}>
-      {children}
-    </GlobalContext.Provider>
-  );
+  return {
+    user,
+    signIn,
+    signOut,
+    storeAllCookies,
+  } as const;
 };
 
-// export function AuthProvider(props: { children: ReactNode }): JSX.Element {
-//   const [user, setUser] = useState(null);
-//   return <Provider value={{ user, setUser }}>{props.children}</Provider>;
-// }
+export function AuthProvider(props: { children: ReactNode }): JSX.Element {
+  const [user, setUser] = useState(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  return (
+    <Provider value={{ user, setUser, isAuthenticated, setIsAuthenticated }}>
+      {props.children}
+    </Provider>
+  );
+}

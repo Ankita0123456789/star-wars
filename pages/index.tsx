@@ -1,31 +1,29 @@
 import type { NextPage } from "next";
 import { useState, useContext } from "react";
-import axios from "axios";
 import { useRouter } from "next/router";
-import { GlobalContext } from "../context/useAuth";
-import Header from "./header";
 
+import { useAuthProvider } from "../context/useAuth";
+import fetcher from "../libs/fetcher";
+
+import Header from "./header";
 
 const Home: NextPage = () => {
   const router = useRouter();
-  const { user, signIn } = useContext(GlobalContext);
-  const [showMenu, setShowMenu] = useState(false)
+  const auth = useAuthProvider();
+  const [showMenu, setShowMenu] = useState(false);
   const [state, setState] = useState({
     name: "",
     password: "",
   });
- 
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setState({ ...state, [e.target.name]: e.target.value });  
+    setState({ ...state, [e.target.name]: e.target.value });
   };
 
-
-  
   // const handleSubmit = async (e: any) => {
   //   e.preventDefault();
   //   try {
-  //    
+  //
   //     if (signin.success) {
   //       router.push("/tasks");
   //     } else {
@@ -35,24 +33,24 @@ const Home: NextPage = () => {
   //     console.log(error);
   //   }
   // };
-  
-  const handleSubmit = (e:any) => {
-    e.preventDefault();
-    axios.get("https://swapi.dev/api/people/")
-      .then(async (res) => {
-        let data = res.data.results;
 
-        let y = data.filter((x:any) => {
-          return state.name === x.name && state.password === x.birth_year;
-        });
-        if (y.length) {
-          console.log(y);
-          const signin =  await signIn(state.name);
-          console.log(signin)
+  const handleSubmit = async (e: any) => {
+    e.preventDefault();
+    const resp = await fetch("/api/login/", {
+      method: "POST",
+      body: JSON.stringify({ name: state.name, password: state.password }),
+      // headers: { "Content-type": "application/json" },
+    });
+
+    resp
+      .json()
+      .then((res: any) => {
+        if (res.success) {
+          auth.signIn(res.data);
           setShowMenu(true);
           router.push("/planets");
         } else {
-          router.push("/");
+          alert(res.message);
         }
       })
       .catch((err) => {
@@ -62,14 +60,12 @@ const Home: NextPage = () => {
 
   return (
     <>
-      {showMenu ? <Header /> : null }
+      {showMenu ? <Header /> : null}
       <div className="container mx-auto">
         <div className="row place-content-center flex justify-center my-36">
           <div className="card rounded shadow-lg border border-gray-300 columns-1 w-10/12 md:w-7/12 xl:w-5/12 content flex justify-center py-5 bg-blue-200 ">
             <form>
-              <h2 className="text-2xl text-center font-semibold py-4">
-                Login
-              </h2>
+              <h2 className="text-2xl text-center font-semibold py-4">Login</h2>
               <div className="p-3 ">
                 <label htmlFor="floatingInput">Username</label>
                 <br></br>
@@ -100,7 +96,7 @@ const Home: NextPage = () => {
                 <button
                   type="submit"
                   className="border border-default rounded-md text-white p-2 px-10 bg-blue-600"
-                   onClick={handleSubmit}
+                  onClick={handleSubmit}
                 >
                   Submit
                 </button>

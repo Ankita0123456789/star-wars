@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
 import Link from "next/link";
-import { BiChevronDown } from 'react-icons/bi'
+import { BiChevronDown } from "react-icons/bi";
 
 import Popover from "../Popover";
 
@@ -18,7 +18,7 @@ const Dropdown = ({
 }: any) => {
   const trigger = useRef<any>(null);
   const [show, setShow] = useState(false);
-  const cheevron = <BiChevronDown/>;
+  const cheevron = <BiChevronDown />;
 
   return (
     <>
@@ -29,7 +29,6 @@ const Dropdown = ({
         className={`${className}`}
       >
         {label}
-        
       </button>
       <Popover
         trigger={trigger}
@@ -37,7 +36,6 @@ const Dropdown = ({
         show={show}
         onClose={() => setShow(true)}
       >
-        
         <div
           className={`border border-gray-1 z-20 m-3 w-36  bg-white text-black rounded shadow-card ${
             show ? "" : "hidden"
@@ -49,9 +47,9 @@ const Dropdown = ({
               <div
                 key={idx}
                 className="flex items-center  px-3 py-3 hover:bg-gray-4 rounded-md cursor-pointer"
-                onClick={() => isMenu && onChange ? onChange(option) : null}
+                onClick={option.onChange ? option.onChange : null}
               >
-                {isMenu && !onChange ? (
+                {isMenu && !option.onChange ? (
                   <Link href={option.route}>
                     <a>{option.label}</a>
                   </Link>

@@ -1,11 +1,12 @@
 import { InferGetStaticPropsType } from "next";
 import { useState, useContext } from "react";
-import useSWR from "swr";
+import Link from "next/link";
+
 import Header from "../header";
 import Legend from "../legends";
-import fetcher from "../../libs/fetcher";
 import Loading from "../loading";
-import { GlobalContext } from "../../context/useAuth";
+
+import { useAuthProvider } from "../../context/useAuth";
 import { usePaginatePosts } from "../../components/useRequest";
 
 type Planet = {
@@ -17,14 +18,24 @@ type Planet = {
 
 const Planets = () => {
   // const { data: planets } = useSWR(`/api/planets`, fetcher);
-  const { user } = useContext(GlobalContext);
+  const auth = useAuthProvider();
+  const { user } = auth;
   const [searchTitle, setSearchTitle] = useState("");
   const { planets, error, isLoadingMore, size, setSize, isReachingEnd } =
     usePaginatePosts();
   if (error) return <h1>Something went wrong!</h1>;
   if (!planets) return <Loading />;
 
-  console.log(user)
+  console.log(user);
+
+  if (!user) {
+    return (
+      <div>
+        <h1>You are not logged in</h1>
+        <Link href="/">Login</Link>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -98,13 +109,17 @@ const Planets = () => {
               ))}
             </div>
             <div className="text-center">
-              <Loading 
-              disabled={isLoadingMore || isReachingEnd}
-              onClick={() => setSize(size + 1)} text={isLoadingMore
-                ? "Loading Planets"
-                : isReachingEnd
-                ? "No more planets"
-                : "Load more"} />
+              <Loading
+                disabled={isLoadingMore || isReachingEnd}
+                onClick={() => setSize(size + 1)}
+                text={
+                  isLoadingMore
+                    ? "Loading Planets"
+                    : isReachingEnd
+                    ? "No more planets"
+                    : "Load more"
+                }
+              />
             </div>
           </div>
           <div className="mt-56 col-span-2">
