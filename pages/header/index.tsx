@@ -17,7 +17,7 @@ const Header = () => {
                 className="pe-5"
                 setShow
                 options={[
-                  { idx: 1, label: "user" },
+                  { idx: 1, label: "user", route: "/user" },
                   { idx: 2, label: "Logout", onChange: () => signOut() },
                 ]}
               />

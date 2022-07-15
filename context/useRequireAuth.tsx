@@ -7,7 +7,7 @@ const useRequireAuth = () => {
   const router = useRouter();
 
   useEffect(() => {
-    if (!auth.user && router.pathname !== "/secret-lab") {
+    if (!auth.user) {
       router.push("/login");
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps

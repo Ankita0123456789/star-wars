@@ -47,14 +47,15 @@ const Dropdown = ({
               <div
                 key={idx}
                 className="flex items-center  px-3 py-3 hover:bg-gray-4 rounded-md cursor-pointer"
-                onClick={option.onChange ? option.onChange : null}
               >
                 {isMenu && !option.onChange ? (
                   <Link href={option.route}>
                     <a>{option.label}</a>
                   </Link>
                 ) : (
-                  option.label
+                  <span onClick={option.onChange ? option.onChange : null}>
+                    {option.label}
+                  </span>
                 )}
               </div>
             ))}
